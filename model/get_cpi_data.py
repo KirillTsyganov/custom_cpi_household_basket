@@ -61,7 +61,7 @@ for idx, measure in measure_type:
         print(f"MSG: Data Key -> {data_key}")
 
         abs_data = ABSData('CPI', debug=True)
-        abs_data.call_api_data(data_key, start='2008')
+        abs_data.call_api_data(data_key, start='2000')
         dat = abs_data.make_table()
 
         dat2 = dat.assign(start = lambda x: pd.to_datetime(x['start']), 
