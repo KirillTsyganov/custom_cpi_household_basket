@@ -16,7 +16,7 @@ groups
 # %%
 # %%
 measure_type = [
-    (2, "Percentage Change from Previous Period", "quater_on_quater"),
+    (2, "Percentage Change from Previous Period", "quarter_on_quarter"),
     (3, "Percentage Change from Corresponding Quarter of the Previous Year", "year_on_year"),
     # (4, "Contribution to Total CPI"),
     # (5, "Change in Contribution to Total CPI"),
