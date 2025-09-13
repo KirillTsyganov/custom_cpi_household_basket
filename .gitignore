@@ -16,3 +16,4 @@ build/
 *.json
 !top_level_categories.json
 *.xls
+*.pkl
