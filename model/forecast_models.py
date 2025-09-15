@@ -143,7 +143,7 @@ class ForecastModels:
         if basket_idx is not None:
             indices = [basket_idx]
 
-        print(f"DEBUG: Indices -> {indices}")
+        # print(f"DEBUG: Indices -> {indices}")
 
         for index in indices:
             model = self.get_model(index)
