@@ -15,5 +15,6 @@ build/
 *.csv
 *.json
 !top_level_categories.json
+!function.json
 *.xls
 *.pkl
