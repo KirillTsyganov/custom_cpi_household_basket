@@ -1,0 +1,22 @@
+<!doctype html>
+<html>
+<head>
+    <title>Forecast Results</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+</head>
+<body>
+    <h2>Submitted Values</h2>
+    <ul>
+        {% for name, value in results.items() %}
+            <li>{{ name }}: {{ value }}</li>
+        {% endfor %}
+    </ul>
+    <h3>External Forecast Response</h3>
+    <ul>
+        {% for item in external_response %}
+            <li>{{ item }}</li>
+        {% endfor %}
+    </ul>
+    <a href="{{ url_for('index') }}">Back</a>
+</body>
+</html>
