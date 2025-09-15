@@ -1,10 +1,13 @@
 # %%
+import os
 from forecast_models import ForecastModels
 import azure.functions as func
 import json
 
-models = ForecastModels()
+script_dir = os.path.dirname(os.path.abspath(__file__))
+models_dir = os.path.join(script_dir, 'artifacts')
 
+models = ForecastModels(artifacts_dir=models_dir)
 
 def main(req: func.HttpRequest) -> func.HttpResponse:
     # 1. Get the JSON payload from the request body

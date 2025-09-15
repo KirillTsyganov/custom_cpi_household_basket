@@ -121,13 +121,13 @@ class ForecastModels:
 
         return model
 
-    def forecast(self, period=1, basket_idx=None):
+    def forecast(self, period=1, basket_idx=0):
         """
         Forecast the next value(s) for all CPI baskets.
 
         Args:
             period (int): Number of quarters to forecast. Default is 1, meaning the next quarter.
-            basket_idx (int, list): Index of the CPI basket to forecast. If None, forecasts all baskets.
+            basket_idx (int, list): Index of the CPI basket to forecast. 0 will forecasts all baskets.
 
         Returns:
             dict: A dictionary with basket indices as keys and their corresponding forecast results.
@@ -140,7 +140,7 @@ class ForecastModels:
 
         indices = list(self.models.keys())
 
-        if basket_idx is not None:
+        if isinstance(basket_idx, int) and basket_idx > 0:
             indices = [basket_idx]
 
         # print(f"DEBUG: Indices -> {indices}")
