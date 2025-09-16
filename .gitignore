@@ -18,3 +18,10 @@ build/
 !function.json
 *.xls
 *.pkl
+
+# data files, ok to commit
+!DCOILBRENTEU.csv
+!fx_data.csv
+!cpi_11_main_groups.json
+!cpi_quarterly_quarter_on_quarter.csv
+!cpi_quarterly_year_on_year.csv
