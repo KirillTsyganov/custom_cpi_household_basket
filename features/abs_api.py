@@ -3,9 +3,9 @@ import json
 import requests
 import pandas as pd
 
+
 class ABSData:
     def __init__(self, dataflow_id, debug=False):
-
         # dataflow_id = 'CPI'
         # MEASURE.INDEX.TSEST.REGION.FREQ
 
@@ -26,14 +26,9 @@ class ABSData:
         self.dims = None
 
     def _set_observation_struct(self):
-
-        self.obs = self.api_data['data'] \
-                            ['structures'] \
-                            [0] \
-                            ['dimensions'] \
-                            ['observation'] \
-                            [0] \
-                            ['values']
+        self.obs = self.api_data["data"]["structures"][0]["dimensions"]["observation"][
+            0
+        ]["values"]
 
         self.obs_columns = list(self.obs[0].keys())
 
@@ -41,30 +36,18 @@ class ABSData:
         # TODO: Need smarter implementation
         # Maybe it's own class Dimensions..?
 
-        self.dims = self.api_data['data'] \
-                                    ['structures'] \
-                                    [0] \
-                                    ['dimensions'] \
-                                    ['series']
+        self.dims = self.api_data["data"]["structures"][0]["dimensions"]["series"]
 
         # TODO: For now I'll assume the order of the dimensions is correct
         # but the proper way is to check keyPosition value
 
     def _set_series_keys(self):
-
-        self.series_keys = list(self.api_data['data']['dataSets'][0]['series'].keys())
+        self.series_keys = list(self.api_data["data"]["dataSets"][0]["series"].keys())
 
     def _get_series_values(self, key):
-
-        return self.api_data['data'] \
-                                ['dataSets']\
-                                [0]\
-                                ['series']\
-                                [key]\
-                                ['observations']
+        return self.api_data["data"]["dataSets"][0]["series"][key]["observations"]
 
     def _call_api_data(self, url, headers):
-
         response = requests.get(url, headers=headers)
         self.status_code = response.status_code
 
@@ -100,7 +83,7 @@ class ABSData:
         if self.debug:
             print(f"DEBUG: Requesting -> {url}")
 
-        headers={'accept': 'application/vnd.sdmx.data+json'}
+        headers = {"accept": "application/vnd.sdmx.data+json"}
 
         if self.data_key is not None and self.data_key != data_key:
             self._call_api_data(url, headers)
@@ -113,13 +96,17 @@ class ABSData:
         if self.obs:
             return self.obs
         else:
-            raise ValueError("No observation data available, call call_api_data() first")
+            raise ValueError(
+                "No observation data available, call call_api_data() first"
+            )
 
     def get_observation_columns(self):
         if self.obs_columns:
             return self.obs_columns
         else:
-            raise ValueError("No observation columns available, call call_api_data() first")
+            raise ValueError(
+                "No observation columns available, call call_api_data() first"
+            )
 
     def get_api_data(self):
         if self.api_data:
@@ -127,14 +114,12 @@ class ABSData:
         else:
             raise ValueError("No data available, call call_api_data() first")
 
-
     def make_table(self):
-
         res = []
 
         for series_key in self.series_keys:
             # TODO: I need to break up the key into indecies
-            idx = list(map(int, series_key.split(':')))
+            idx = list(map(int, series_key.split(":")))
 
             if self.debug:
                 print(f"DEBUG: Indices -> {idx}")
@@ -153,18 +138,20 @@ class ABSData:
                 # print(f"DEBUG: Series -> {series}")
                 # print(f"DEBUG: i -> {i}")
 
-                t['start'] = o['start']
-                t['end'] = o['end']
+                t["start"] = o["start"]
+                t["end"] = o["end"]
                 # t['cal_quarter'] = o['name'].split('-')[-1]
-                t['cal_quarter'] = o['name']
-                t['cpi_value'] = series[str(i)][0] # The index has to come from somewhere ..? This causes a bug if filtering on year
+                t["cal_quarter"] = o["name"]
+                t["cpi_value"] = series[str(i)][
+                    0
+                ]  # The index has to come from somewhere ..? This causes a bug if filtering on year
 
                 # t['decimal'] = series[str(i)][2]
 
                 for i in range(len(idx)):
                     if i in keep:
-                        k = self.dims[i]['name']
-                        v = self.dims[i]['values'][idx[i]]['name']
+                        k = self.dims[i]["name"]
+                        v = self.dims[i]["values"][idx[i]]["name"]
                         t[k] = v
 
                 res.append(t)

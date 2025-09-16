@@ -15,7 +15,7 @@ fn_suffixes = [
     "2010-2013",
     "2014-2017",
     "2018-2022",
-    "2023-current"
+    "2023-current",
 ]
 
 fx_dir = "data/fx"
@@ -35,17 +35,20 @@ for suffix, fn in zip(fn_suffixes, fns):
 
 # %%
 dfs = []
+
 for fn in fns:
     xl = pd.ExcelFile(fn)
     sheets = xl.sheet_names
     dfs.append(pd.read_excel(fn, sheet_name=sheets[0], skiprows=10))
 
+dfs
 # %%
 dat = pd.concat(dfs, ignore_index=True)
 dat
 
 # %%
 # If 'Series ID' is a datetime, this works; otherwise, adjust as needed
-dat2 = dat.query("`Series ID`.dt.year >= 2000").sort_values("Series ID").reset_index(drop=True)
+# dat2 = dat.query("`Series ID`.dt.year >= 2000").sort_values("Series ID").reset_index(drop=True)
+dat2 = dat.sort_values("Series ID").reset_index(drop=True)
 dat2.to_csv("data/fx/fx_data.csv", index=False)
 # %%
