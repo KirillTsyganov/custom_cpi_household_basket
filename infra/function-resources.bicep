@@ -12,6 +12,16 @@ resource storageAccount 'Microsoft.Storage/storageAccounts@2024-01-01' = {
   kind: 'StorageV2'
 }
 
+resource blobService 'Microsoft.Storage/storageAccounts/blobServices@2024-01-01' = {
+  parent: storageAccount
+  name: 'default'
+}
+
+resource storageContainer 'Microsoft.Storage/storageAccounts/blobServices/containers@2024-01-01' = {
+  parent: blobService
+  name: '${functionAppName}-code-container'
+}
+
 resource appServicePlan 'Microsoft.Web/serverfarms@2024-11-01' = {
   name: '${functionAppName}-plan'
   location: location
@@ -19,7 +29,7 @@ resource appServicePlan 'Microsoft.Web/serverfarms@2024-11-01' = {
     name: 'Y1'
     tier: 'Dynamic'
   }
-  kind: 'functionapp,linux'
+  kind: 'functionapp'
   properties: {
     reserved: true
   }
@@ -29,11 +39,14 @@ resource functionApp 'Microsoft.Web/sites@2024-11-01' = {
   name: functionAppName
   location: location
   kind: 'functionapp,linux'
+  identity: {
+    type: 'SystemAssigned'
+  }
   properties: {
     serverFarmId: appServicePlan.id
     httpsOnly: true
     siteConfig: {
-      linuxFxVersion: 'Python|3.12'
+      alwaysOn: false
       appSettings: [
         {
           name: 'AzureWebJobsStorage'
@@ -44,8 +57,16 @@ resource functionApp 'Microsoft.Web/sites@2024-11-01' = {
           value: '~4'
         }
         {
+          name: 'FUNCTIONS_WORKER_RUNTIME'
+          value: 'python'
+        }
+        {
           name: 'WEBSITE_RUN_FROM_PACKAGE'
           value: '1'
+        }
+        {
+          name: 'APPLICATIONINSIGHTS_CONNECTION_STRING'
+          value: appInsights.properties.ConnectionString
         }
       ]
     }
@@ -58,13 +79,5 @@ resource appInsights 'Microsoft.Insights/components@2020-02-02' = {
   kind: 'web'
   properties: {
     Application_Type: 'web'
-  }
-}
-
-resource appInsightsConnection 'Microsoft.Web/sites/config@2021-03-01' = {
-  parent: functionApp
-  name: 'appsettings'
-  properties: {
-    APPINSIGHTS_INSTRUMENTATIONKEY: appInsights.properties.InstrumentationKey
   }
 }
