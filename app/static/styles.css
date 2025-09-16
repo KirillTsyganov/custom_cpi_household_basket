@@ -73,3 +73,45 @@ li {
 li:last-child {
     border-bottom: none;
 }
+
+.inflation-result {
+    max-width: 400px;
+    margin: 2rem auto;
+    padding: 2rem;
+    background: #e0f2fe;
+    border-radius: 16px;
+    box-shadow: 0 2px 12px rgba(37,99,235,0.07);
+    text-align: center;
+}
+
+.inflation-result .rate {
+    font-size: 2.5rem;
+    font-weight: 700;
+    color: #2563eb;
+    letter-spacing: 1px;
+}
+
+.filled-categories {
+    max-width: 400px;
+    margin: 2rem auto;
+    padding: 1.5rem;
+    background: #fff7ed;
+    border-radius: 12px;
+    box-shadow: 0 2px 12px rgba(251,146,60,0.07);
+}
+.filled-categories h3 {
+    margin-top: 0;
+    color: #ea580c;
+    text-align: center;
+}
+.filled-categories ul {
+    list-style: none;
+    padding: 0;
+}
+.filled-categories li {
+    padding: 0.5rem 0;
+    border-bottom: 1px solid #fde68a;
+}
+.filled-categories li:last-child {
+    border-bottom: none;
+}

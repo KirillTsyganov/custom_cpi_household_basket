@@ -6,10 +6,10 @@
 </head>
 <body>
     <h2>Enter values for each category</h2>
-    <form method="post">
+    <form method="post" action="{{ url_for('forecast') }}">
         {% for name in categories %}
             <label for="cat{{ loop.index }}">{{ name }}:</label>
-            <input type="number" id="cat{{ loop.index }}" name="cat{{ name }}" required><br><br>
+            <input type="number" id="cat{{ loop.index }}" name="{{ name }}"><br><br>
         {% endfor %}
         <input type="submit" value="Submit">
     </form>
