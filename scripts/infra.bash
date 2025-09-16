@@ -1,6 +1,7 @@
 #!/bin/bash
 
-infra_dir='.'
+origin=$(dirname ${BASH_SOURCE[0]})
+infra_dir="${origin}/../infra"
 main_bicep='main.bicep'
 # params_file='parameters.private.json'
 

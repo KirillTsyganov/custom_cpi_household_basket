@@ -3,7 +3,7 @@ param functionAppName string
 param storageAccountName string
 param appInsightsName string
 
-resource storageAccount 'Microsoft.Storage/storageAccounts@2021-09-01' = {
+resource storageAccount 'Microsoft.Storage/storageAccounts@2024-01-01' = {
   name: storageAccountName
   location: location
   sku: {
@@ -12,24 +12,28 @@ resource storageAccount 'Microsoft.Storage/storageAccounts@2021-09-01' = {
   kind: 'StorageV2'
 }
 
-resource appServicePlan 'Microsoft.Web/serverfarms@2021-03-01' = {
-  name: functionAppName
+resource appServicePlan 'Microsoft.Web/serverfarms@2024-11-01' = {
+  name: '${functionAppName}-plan'
   location: location
   sku: {
     name: 'Y1'
     tier: 'Dynamic'
   }
-  kind: 'FunctionApp'
+  kind: 'functionapp,linux'
+  properties: {
+    reserved: true
+  }
 }
 
-resource functionApp 'Microsoft.Web/sites@2021-03-01' = {
+resource functionApp 'Microsoft.Web/sites@2024-11-01' = {
   name: functionAppName
   location: location
-  kind: 'functionapp'
+  kind: 'functionapp,linux'
   properties: {
     serverFarmId: appServicePlan.id
     httpsOnly: true
     siteConfig: {
+      linuxFxVersion: 'Python|3.12'
       appSettings: [
         {
           name: 'AzureWebJobsStorage'
@@ -38,10 +42,6 @@ resource functionApp 'Microsoft.Web/sites@2021-03-01' = {
         {
           name: 'FUNCTIONS_EXTENSION_VERSION'
           value: '~4'
-        }
-        {
-          name: 'FUNCTIONS_WORKER_RUNTIME'
-          value: 'python'
         }
         {
           name: 'WEBSITE_RUN_FROM_PACKAGE'
