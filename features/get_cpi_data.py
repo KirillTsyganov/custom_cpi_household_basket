@@ -36,14 +36,14 @@ for idx, measure, measure_name in measure_type:
         print(f"MSG: Data Key -> {data_key}")
 
         abs_data = ABSData('CPI', debug=True)
-        abs_data.call_api_data(data_key, start='2000')
+        abs_data.call_api_data(data_key)
         dat = abs_data.make_table()
 
-        dat2 = dat.assign(start = lambda x: pd.to_datetime(x['start']), 
+        dat2 = dat.assign(start = lambda x: pd.to_datetime(x['start']),
                           end = lambda x: pd.to_datetime(x['end']),
                           measurement = measure) \
                     .sort_values('start') \
-                    .reset_index(drop=True) 
+                    .reset_index(drop=True)
 
         dfs.append(dat2)
 
