@@ -201,7 +201,7 @@ class ForecastModels:
             results.append(
                 {
                     "basket_name": basket_name,
-                    "period": str(period),
+                    # "period": str(period),
                     "forecast": forecast,
                     "conf_int": (lower, upper),
                 }

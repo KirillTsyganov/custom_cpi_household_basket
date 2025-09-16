@@ -1,16 +1,13 @@
-# %%
-import os
-from forecast_models import ForecastModels
 import azure.functions as func
 import json
+from forecast_models import ForecastModels
 
-script_dir = os.path.dirname(os.path.abspath(__file__))
-models_dir = os.path.join(script_dir, 'artifacts')
+models = ForecastModels(artifacts_dir='artifacts')
 
-models = ForecastModels(artifacts_dir=models_dir)
+app = func.FunctionApp(http_auth_level=func.AuthLevel.ANONYMOUS)
 
-def main(req: func.HttpRequest) -> func.HttpResponse:
-    # 1. Get the JSON payload from the request body
+@app.route(route="forecast", methods=["POST"])
+def forecast_function(req: func.HttpRequest) -> func.HttpResponse:
     try:
         req_body = req.get_json()
     except ValueError:
@@ -18,7 +15,6 @@ def main(req: func.HttpRequest) -> func.HttpResponse:
             "Please pass a valid JSON payload in the request body.", status_code=400
         )
 
-    # 2. Extract the values from the JSON
     try:
         basket_idx = req_body.get("basket_idx")
         period = req_body.get("period")
@@ -28,11 +24,9 @@ def main(req: func.HttpRequest) -> func.HttpResponse:
             status_code=400,
         )
 
-    # 3. Use the extracted values in your model
-    models.forecast(basket_idx, period)
+    models.forecast(period=period, basket_idx=basket_idx)
     forecast_result = models.results()
 
-    # 4. Return the result in a JSON response
     return func.HttpResponse(
         json.dumps(forecast_result), mimetype="application/json", status_code=200
     )
