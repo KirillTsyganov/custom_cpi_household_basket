@@ -35,7 +35,6 @@ resource appServicePlan 'Microsoft.Web/serverfarms@2024-11-01' = {
   }
 }
 
-// --- UPDATED FUNCTION APP RESOURCE ---
 resource functionApp 'Microsoft.Web/sites@2024-11-01' = {
   name: functionAppName
   location: location
@@ -46,12 +45,10 @@ resource functionApp 'Microsoft.Web/sites@2024-11-01' = {
   properties: {
     serverFarmId: appServicePlan.id
     httpsOnly: true
-    // --- RE-ENABLED AND CORRECTED FUNCTIONAPPCONFIG ---
     functionAppConfig: {
       deployment: {
         storage: {
           type: 'blobContainer'
-          // Point the deployment to the storage container you've defined
           value: '${storageAccount.properties.primaryEndpoints.blob}${storageContainer.name}'
           authentication: {
             type: 'SystemAssignedIdentity'
@@ -60,14 +57,13 @@ resource functionApp 'Microsoft.Web/sites@2024-11-01' = {
       }
       runtime: {
         name: 'python'
-        version: '3.12' // Set the Python version
+        version: '3.12'
       }
       scaleAndConcurrency: {
-        instanceMemoryMB: 2048 // Required for FlexConsumption
-        maximumInstanceCount: 40 // Also required, as per previous errors
+        instanceMemoryMB: 2048
+        maximumInstanceCount: 40
       }
     }
-    // appSettings are now managed by functionAppConfig for most settings
     siteConfig: {
       alwaysOn: false
     }
@@ -110,23 +106,15 @@ resource appInsights 'Microsoft.Insights/components@2020-02-02' = {
   }
 }
 
-// The AppInsights connection string is now handled differently.
-// For FlexConsumption, you can use the parent-child resource model.
 resource appInsightsConnection 'Microsoft.Web/sites/config@2022-09-01' = {
   parent: functionApp
   name: 'appsettings'
   properties: {
-    // AzureWebJobsStorage is still a required app setting
     AzureWebJobsStorage: 'DefaultEndpointsProtocol=https;AccountName=${storageAccount.name};EndpointSuffix=${environment().suffixes.storage};AccountKey=${storageAccount.listKeys().keys[0].value}'
-
-    // Application Insights connection string
     APPINSIGHTS_INSTRUMENTATIONKEY: appInsights.properties.InstrumentationKey
   }
 }
 
-
-// --- NEW RESOURCE: ROLE ASSIGNMENT ---
-// Grant the Function App's identity the Storage Blob Data Contributor role on the storage account
 resource storageAccountRoleAssignment 'Microsoft.Authorization/roleAssignments@2022-04-01' = {
   name: guid('${functionApp.id}-storage-role-assignment')
   scope: storageAccount
