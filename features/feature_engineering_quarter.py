@@ -112,9 +112,9 @@ dat2 = pd.merge(
     last_crude_oil_price_per_quarter, on=["start", "end", "cal_quarter"], how="left"
 )
 
-# dat2
-# dat2.dropna(inplace=True)
-# %%
-dat2.to_csv("data/processed/features.csv", index=False)
+# Add _qoq suffix to all columns
+# dat2 = dat2.rename(columns=lambda x: f"{x}_qoq")
+
+dat2.to_csv("data/processed/features_quarter_on_quarter.csv", index=False)
 
 # %%
