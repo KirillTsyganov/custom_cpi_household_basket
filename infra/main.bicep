@@ -15,7 +15,7 @@ resource resourceGroup 'Microsoft.Resources/resourceGroups@2024-03-01' = {
 }
 
 // Reference the newly created resource group for module scope
-module functionResources './function-resources.bicep' = {
+module functionResources './function-app.bicep' = {
   name: 'function-resources-deployment'
   scope: resourceGroup
   params: {
@@ -23,5 +23,15 @@ module functionResources './function-resources.bicep' = {
     functionAppName: functionAppName
     storageAccountName: storageAccountName
     appInsightsName: appInsightsName
+  }
+}
+
+module webAppResources './webapp.bicep' = {
+  name: 'webapp-resources-deployment'
+  scope: resourceGroup
+  params: {
+    location: location
+    appServicePlanName: '${resourceNamePrefix}-asp'
+    appServiceName: '${resourceNamePrefix}-webapp'
   }
 }
