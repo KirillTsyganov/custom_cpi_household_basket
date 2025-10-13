@@ -9,22 +9,46 @@
     {% if error_message %}
         <p style="color: red;">Error: {{ error_message }}</p>
     {% elif personal_inflation_rate is not none %}
-        <div class="inflation-result">
-            <span class="rate">{{ personal_inflation_rate | round(2) }}%</span>
-        </div>
+        <table class="inflation-table">
+            <tr>
+                <th>Forecast</th>
+                <th>Actual</th>
+            </tr>
+            <tr>
+                <td>
+                    <div class="inflation-result">
+                        <span class="rate">{{ personal_inflation_rate | round(2) }}%</span>
+                    </div>
+                </td>
+                <td>
+                    {% if personal_inflation_actual is not none %}
+                        <div class="inflation-result">
+                            <span class="rate">{{ personal_inflation_actual | round(2) }}%</span>
+                        </div>
+                    {% else %}
+                        <span class="rate">N/A</span>
+                    {% endif %}
+                </td>
+            </tr>
+        </table>
         {% if filled_categories %}
-            <div class="filled-categories">
-                <h3>Categories You Filled</h3>
-                <ul>
-                    {% for cat in filled_categories %}
-                        <li>
-                            <strong>{{ cat.name }}</strong>:
-                            Spending = {{ cat.amount }},
-                            CPI Forecast = {{ cat.cpi | round(2) }}%
-                        </li>
-                    {% endfor %}
-                </ul>
-            </div>
+        <div class="filled-categories">
+            <h3>Categories You Filled</h3>
+            <ul>
+                {% for category, values in filled_categories.items() %}
+                    <li>
+                        <strong>{{ category }}</strong>
+                        <ul>
+                            <li>Spending = {{ values.quarterly_spend }}</li>
+                            <li>Forecasted CPI = {{ values.forecast_cpi | round(2) }}%</li>
+                            <li>Future Spending = {{ values.personal_inflation_forecast | round(2) }}%</li>
+                            <li>Last Quarter CPI = {{ values.last_quarter_cpi | round(2) }}%</li>
+                            <li>Last Quarter Spending = {{ values.personal_inflation_actual | round(2) }}%</li>
+                        </ul>
+                    </li>
+                {% endfor %}
+            </ul>
+        </div>
         {% endif %}
     {% else %}
         <p>No result available.</p>

@@ -1,5 +1,6 @@
-from flask import Flask, render_template, request, redirect, url_for
+from flask import Flask, render_template, request #, redirect, url_for
 import requests
+import pandas as pd
 
 app = Flask(__name__)
 
@@ -17,60 +18,84 @@ categories = [
     "Education",
 ]
 
+
 @app.route("/", methods=["GET"])
 def index():
     return render_template("index.html", categories=categories)
 
+
 @app.route("/forecast", methods=["POST"])
 def forecast():
-    results = {}
+    actual_cpi_fn = "./last_quarter_cpi.csv"
+    dat = pd.read_csv(actual_cpi_fn)
+
+    filled_categories = {}
+    form_results = {}
     for name in categories:
         value = request.form.get(name, "")
         try:
-            results[name] = float(value) if value.strip() != "" else 0.0
+            form_results[name] = float(value) if value.strip() != "" else 0.0
         except ValueError:
-            results[name] = 0.0
-    total_spending = sum(results.values())
-    payload = {
-        "basket_idx": 0,
-        "period": 1
-    }
+            form_results[name] = 0.0
+    total_spending = sum(form_results.values())
+    payload = {"basket_idx": 0, "period": 1}
     try:
         endpoint_url = "https://cpiforecasting-app.azurewebsites.net/api/forecast"
         resp = requests.post(endpoint_url, json=payload)
         resp.raise_for_status()
         external_response = resp.json()  # list of dicts with basket_name and forecast
+        # print(f"DEBUG: External response: {external_response}")
 
-        forecast_map = {item["basket_name"]: item["forecast"] for item in external_response}
+        forecast_map = {
+            item["basket_name"]: item["forecast"] for item in external_response
+        }
+        print(f"DEBUG: Forecast map: {forecast_map}")
 
         # Calculate personal inflation rate
-        personal_inflation_rate = 0.0
         if total_spending > 0:
             for name in categories:
-                proportion = results[name] / total_spending
-                cpi = forecast_map.get(name, 0)
-                personal_inflation_rate += proportion * cpi
-        else:
-            personal_inflation_rate = 0.0
+                proportion = form_results[name] / total_spending
+                cpi = forecast_map.get(name + "_qoq", 0)
+                last_quarter_cpi = float(dat[name].values[0])
+                personal_inflation_forecast = proportion * cpi
+                personal_inflation_actual = proportion * last_quarter_cpi
 
-        # Prepare filled categories and their CPI
-        filled_categories = [
-            {"name": name, "cpi": forecast_map.get(name, 0), "amount": results[name]}
-            for name in categories if results[name] > 0
-        ]
+                if name not in filled_categories:
+                    filled_categories[name] = {}
+
+                filled_categories[name] = {
+                    "forecast_cpi": cpi,
+                    "last_quarter_cpi": last_quarter_cpi,
+                    "quarterly_spend": form_results[name],
+                    "personal_inflation_forecast": personal_inflation_forecast,
+                    "personal_inflation_actual": personal_inflation_actual,
+                }
+        else:
+            raise ValueError("Total spending must be greater than zero.")
 
         error_message = None
     except Exception as e:
-        personal_inflation_rate = None
-        filled_categories = []
         error_message = str(e)
+
+    # print(f"DEBUG: Filled categories: {filled_categories}")
+    # print(f"DEBUG: Filled categories: {filled_categories.values()}")
+    personal_inflation_rate = sum(
+        item["personal_inflation_forecast"] for item in filled_categories.values()
+    )
+    personal_inflation_actual = sum(
+        item["personal_inflation_actual"] for item in filled_categories.values()
+    )
+    print(f"DEBUG: Personal inflation rate: {personal_inflation_rate}")
+    print(f"DEBUG: Personal inflation actual: {personal_inflation_actual}")
 
     return render_template(
         "forecast.html",
         personal_inflation_rate=personal_inflation_rate,
+        personal_inflation_actual=personal_inflation_actual,
         filled_categories=filled_categories,
-        error_message=error_message
+        error_message=error_message,
     )
+
 
 if __name__ == "__main__":
     app.run(debug=True)
