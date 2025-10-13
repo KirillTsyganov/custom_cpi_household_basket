@@ -1,7 +1,7 @@
 #!/bin/bash
 
 payload='{
-    "basket_idx": 2,
+    "basket_idx": 0,
     "period": 1
 }'
 

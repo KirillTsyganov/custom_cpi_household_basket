@@ -13,7 +13,7 @@ cd ${origin}/../${deploy_dir}
 # echo "gunicorn --bind=0.0.0.0 --timeout 600 run:app" > "startup.txt"
 
 rg_name="cpiforecasting-rg"
-webapp_name="cpiforecasting-app-webapp"
+webapp_name="cpiforecasting-webapp"
 
 echo "MSG: Deployment stage"
 
