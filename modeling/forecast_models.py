@@ -115,6 +115,8 @@ class ForecastModels:
             raise ValueError(msg)
 
         model_path = self.models.get(basket_idx)
+        if self.debug:
+            print(f"DEBUG: Model path -> {model_path}")
 
         with open(model_path, "rb") as f:
             model = pickle.load(f)
@@ -143,10 +145,15 @@ class ForecastModels:
         if isinstance(basket_idx, int) and basket_idx > 0:
             indices = [basket_idx]
 
-        # print(f"DEBUG: Indices -> {indices}")
+        if self.debug:
+            print(f"DEBUG: Indices -> {indices}")
 
         for index in indices:
             model = self.get_model(index)
+
+            if self.debug:
+                print(f"DEBUG: Model -> {model}")
+
             results = model.get_forecast(steps=period)
 
             # TODO: overwrite previous results of a single forecasting.
