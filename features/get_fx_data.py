@@ -5,6 +5,7 @@ import requests
 import pandas as pd
 from datetime import datetime
 
+
 def download_fx_files(output_dir, historical=False):
     """
     Fetch FX data from the RBA website and save it as a CSV file.
@@ -61,12 +62,14 @@ def download_fx_files(output_dir, historical=False):
 
     return fns
 
+
 def read_fx_files(fns):
     """
     Read FX data from the downloaded Excel files and concatenate them into a single DataFrame.
 
     Args:
         fns (list of str): List of file paths to the downloaded Excel files.
+        snapshot_date (str): Date string to filter the data (format: 'YYYY-MM-DD').
     Returns:
         pd.DataFrame: Concatenated DataFrame containing FX data from all files.
     """
@@ -78,6 +81,7 @@ def read_fx_files(fns):
         dfs.append(pd.read_excel(fn, sheet_name=sheets[0], skiprows=10))
 
     return pd.concat(dfs, ignore_index=True)
+
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
@@ -92,6 +96,12 @@ if __name__ == "__main__":
         action="store_true",
         help="If set, download all historical FX files; otherwise, download only the most recent file.",
     )
+    parser.add_argument(
+        "--snapshot_date",
+        type=str,
+        default="2025-10-01",
+        help="Start date for filtering data in YYYY-MM-DD format.",
+    )
     args = parser.parse_args()
 
     script_dir = os.path.dirname(os.path.abspath(__file__))
@@ -102,13 +112,21 @@ if __name__ == "__main__":
 
     # If 'Series ID' is a datetime, this works; otherwise, adjust as needed
     # dat2 = dat.query("`Series ID`.dt.year >= 2000").sort_values("Series ID").reset_index(drop=True)
-    dat2 = dat.sort_values("Series ID").reset_index(drop=True)
-    
+    dat2 = (
+        dat.assign(**{"Series ID": pd.to_datetime(dat["Series ID"], errors="coerce")})
+        .sort_values("Series ID")
+        .reset_index(drop=True)
+    )
+
+    if not args.historical:
+        snapshot_date = pd.to_datetime(args.snapshot_date)
+        dat2 = dat2[dat2["Series ID"] >= snapshot_date]
+
     max_date = dat2["Series ID"].max().strftime("%Y%m%d")
     min_date = dat2["Series ID"].min().strftime("%Y%m%d")
 
     today = datetime.now().strftime("%Y%m%d")
 
-    output_fn = os.path.join(output_dir, f"{today}_fx_data_{max_date}_{min_date}.csv")
+    output_fn = os.path.join(output_dir, f"{today}_fx_data_{min_date}_{max_date}.csv")
     dat2.to_csv(output_fn, index=False)
 # %%
