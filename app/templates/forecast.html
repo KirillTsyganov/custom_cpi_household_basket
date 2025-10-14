@@ -5,22 +5,22 @@
     <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
 </head>
 <body>
-    <h2>Your Personal Inflation Rate</h2>
+    <h2>Hey {{ name }}, Your Personal Inflation Rate for next Quarter</h2>
     {% if error_message %}
         <p style="color: red;">Error: {{ error_message }}</p>
     {% elif personal_inflation_rate is not none %}
         <table class="inflation-table">
-            <tr>
+            <!-- <tr>
                 <th>Forecast</th>
                 <th>Actual</th>
-            </tr>
+            </tr> -->
             <tr>
                 <td>
                     <div class="inflation-result">
                         <span class="rate">{{ personal_inflation_rate | round(2) }}%</span>
                     </div>
                 </td>
-                <td>
+                <!-- <td>
                     {% if personal_inflation_actual is not none %}
                         <div class="inflation-result">
                             <span class="rate">{{ personal_inflation_actual | round(2) }}%</span>
@@ -28,7 +28,7 @@
                     {% else %}
                         <span class="rate">N/A</span>
                     {% endif %}
-                </td>
+                </td> -->
             </tr>
         </table>
         {% if filled_categories %}
@@ -41,14 +41,7 @@
                     <th>Future Spending</th>
                     <th>Last Quarter CPI</th>
                     <th>Last Quarter Spending</th>
-                </tr>
-                <tr>
-                    <td><strong>Total</strong></td>
-                    <td>{{ total_values.quarterly_spend }}</td>
-                    <td>{{ total_values.forecast_cpi | round(2) }}%</td>
-                    <td>{{ total_values.personal_inflation_forecast | round(2) }}%</td>
-                    <td>{{ total_values.last_quarter_cpi | round(2) }}%</td>
-                    <td>{{ total_values.personal_inflation_actual | round(2) }}%</td>
+                    <th>CPI Weights</th>
                 </tr>
                 {% for category, values in filled_categories.items() %}
                 <tr>
@@ -58,6 +51,7 @@
                     <td>{{ values.personal_inflation_forecast | round(2) }}%</td>
                     <td>{{ values.last_quarter_cpi | round(2) }}%</td>
                     <td>{{ values.personal_inflation_actual | round(2) }}%</td>
+                    <td>{{ values.cpi_weights }}</td>
                 </tr>
                 {% endfor %}
             </table>

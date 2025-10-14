@@ -1,25 +1,16 @@
-<!doctype html>
+<!DOCTYPE html>
 <html>
 <head>
-    <title>Category Inputs</title>
+    <title>Login</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
 </head>
 <body>
-    <h2>Enter values for each category</h2>
-    <form method="post" action="{{ url_for('forecast') }}">
-        {% for name in categories %}
-            <label for="cat{{ loop.index }}">{{ name }}:</label>
-            <input type="number" id="cat{{ loop.index }}" name="{{ name }}"><br><br>
-        {% endfor %}
-        <input type="submit" value="Submit">
-    </form>
-    {% if results %}
-        <h3>Submitted Values:</h3>
-        <ul>
-        {% for name, value in results.items() %}
-            <li>{{ name }}: {{ value }}</li>
-        {% endfor %}
-        </ul>
-    {% endif %}
+    <div style="display: flex; justify-content: center; align-items: center; min-height: 100vh;">
+        <form method="POST" action="/" style="width: 100%; max-width: 400px;">
+            <h2>Enter your name</h2>
+            <input type="text" name="name" placeholder="Your Name" required style="width: 100%; margin-bottom: 1.5rem;">
+            <input type="submit" value="Proceed">
+        </form>
+    </div>
 </body>
 </html>

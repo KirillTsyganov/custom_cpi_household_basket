@@ -1,8 +1,9 @@
-from flask import Flask, render_template, request #, redirect, url_for
+from flask import Flask, render_template, request, session, redirect, url_for
 import requests
 import pandas as pd
 
 app = Flask(__name__)
+app.secret_key = "your_super_secret_key"  # Add this line
 
 categories = [
     "Housing",
@@ -19,9 +20,28 @@ categories = [
 ]
 
 
-@app.route("/", methods=["GET"])
+@app.route("/", methods=["GET", "POST"])
 def index():
-    return render_template("index.html", categories=categories)
+    if request.method == "POST":
+        name = request.form.get("name", "")
+        session["name"] = name
+        return redirect(url_for("form"))
+
+    return render_template("index.html")
+
+
+@app.route("/form", methods=["GET"])
+def form():
+    name = session.get("name", "")
+    average_spend = (
+        pd.read_csv("average_spend.csv")
+        .set_index("categories")["weekly_spend"]
+        .to_dict()
+    )
+    average_spend = {k: v * 13 for k, v in average_spend.items()}
+    return render_template(
+        "form.html", categories=categories, name=name, average_spend=average_spend
+    )
 
 
 @app.route("/forecast", methods=["POST"])
@@ -52,6 +72,12 @@ def forecast():
         }
         print(f"DEBUG: Forecast map: {forecast_map}")
 
+        endpoint_weights = "http://localhost:7071/api/cpi_weights"
+        resp2 = requests.get(endpoint_weights)
+        resp2.raise_for_status()
+        cpi_weights = resp2.json()
+        print(f"DEBUG: CPI weights: {cpi_weights}")
+
         # Calculate personal inflation rate
         if total_spending > 0:
             for name in categories:
@@ -70,6 +96,7 @@ def forecast():
                     "quarterly_spend": form_results[name],
                     "personal_inflation_forecast": personal_inflation_forecast,
                     "personal_inflation_actual": personal_inflation_actual,
+                    "cpi_weights": float(cpi_weights.get(name, 0)),
                 }
         else:
             raise ValueError("Total spending must be greater than zero.")
@@ -85,25 +112,27 @@ def forecast():
         item["personal_inflation_actual"] for item in filled_categories.values()
     )
 
-    total_values = {
-        "forecast_cpi": sum(item["forecast_cpi"] for item in filled_categories.values()),
-        "last_quarter_cpi": sum(
-            item["last_quarter_cpi"] for item in filled_categories.values()
-        ),
-        "quarterly_spend": sum(
-            item["quarterly_spend"] for item in filled_categories.values()
-        ),
-        "personal_inflation_forecast": personal_inflation_rate,
-        "personal_inflation_actual": personal_inflation_actual,
-    }
-
+    # NOTE I think these aren't particularly correct calculations
+    # total_values = {
+    #     "forecast_cpi": sum(item["forecast_cpi"] for item in filled_categories.values()),
+    #     "last_quarter_cpi": sum(
+    #         item["last_quarter_cpi"] for item in filled_categories.values()
+    #     ),
+    #     "quarterly_spend": sum(
+    #         item["quarterly_spend"] for item in filled_categories.values()
+    #     ),
+    #     "personal_inflation_forecast": personal_inflation_rate,
+    #     "personal_inflation_actual": personal_inflation_actual,
+    # }
+    user_name = session.get("name", "")  # Get user name from session
     return render_template(
         "forecast.html",
         personal_inflation_rate=personal_inflation_rate,
         personal_inflation_actual=personal_inflation_actual,
         filled_categories=filled_categories,
-        total_values=total_values,
+        # total_values=total_values,
         error_message=error_message,
+        name=user_name,
     )
 
 

@@ -74,30 +74,32 @@ li:last-child {
     border-bottom: none;
 }
 
+/* Subtle inflation result box */
 .inflation-result {
     max-width: 400px;
     margin: 2rem auto;
     padding: 2rem;
-    background: #e0f2fe;
-    border-radius: 16px;
-    box-shadow: 0 2px 12px rgba(37,99,235,0.07);
+    background: #fff;
+    border-radius: 12px;
+    box-shadow: 0 2px 12px rgba(0,0,0,0.07);
     text-align: center;
 }
 
 .inflation-result .rate {
-    font-size: 2.5rem;
-    font-weight: 700;
-    color: #2563eb;
+    font-size: 2.2rem;
+    font-weight: 600;
+    color: #222;
     letter-spacing: 1px;
 }
 
+/* Subtle filled categories box */
 .filled-categories {
     max-width: 700px;
     margin: 2rem auto;
     padding: 1.5rem;
-    background: #fff7ed;
+    background: #fff;
     border-radius: 12px;
-    box-shadow: 0 2px 12px rgba(251,146,60,0.07);
+    box-shadow: 0 2px 12px rgba(0,0,0,0.07);
     text-align: left;
     display: flex;
     flex-direction: column;
@@ -106,7 +108,7 @@ li:last-child {
 
 .filled-categories h3 {
     margin-top: 0;
-    color: #ea580c;
+    color: #222;
     text-align: center;
 }
 
@@ -147,7 +149,7 @@ filled-categories li:last-child {
     font-size: 0.98rem;
 }
 
-/* Modern Table Styles */
+/* Modern Table Styles - now more neutral */
 .categories-table, .inflation-table {
     width: 100%;
     border-collapse: collapse;
@@ -168,7 +170,7 @@ filled-categories li:last-child {
 .categories-table th, .inflation-table th {
     background: #f3f4f6;
     font-weight: 600;
-    color: #ea580c;
+    color: #222;
     font-size: 1.05rem;
 }
 
@@ -178,11 +180,39 @@ filled-categories li:last-child {
 }
 
 .categories-table tr:nth-child(even) td {
-    background: #fffbe6;
+    background: #f9fafb;
 }
 
 .categories-table td strong {
+    color: #222;
+}
+
+a {
+    display: block;
+    text-align: center;
+    margin: 2rem auto 0 auto;
     color: #2563eb;
+    text-decoration: none;
+    font-weight: 500;
+}
+
+a:hover {
+    text-decoration: underline;
+}
+
+.example-btn {
+    padding: 0.7rem;
+    background: #CEEEE4;
+    color: #222;
+    border: none;
+    border-radius: 6px;
+    font-size: 1rem;
+    cursor: pointer;
+    margin-bottom: 1rem;
+    transition: background 0.2s;
+}
+.example-btn:hover {
+    background: #d1d5db;
 }
 
 @media (max-width: 800px) {

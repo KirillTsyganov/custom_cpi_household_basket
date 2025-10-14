@@ -1,0 +1,35 @@
+<!doctype html>
+<html>
+<head>
+    <title>Category Inputs</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+</head>
+<body>
+    <h2>Enter values for each category</h2>
+    <form method="post" action="{{ url_for('forecast') }}" id="spend-form">
+        <button type="button" id="example-btn" class="example-btn" style="width:100%; margin-bottom:1rem;">Use Example Data</button>
+        {% for name in categories %}
+            <label for="cat{{ loop.index }}">{{ name }}:</label>
+            <input type="number" id="cat{{ loop.index }}" name="{{ name }}">
+        {% endfor %}
+        <input type="submit" value="Submit">
+    </form>
+    {% if results %}
+        <h3>Submitted Values:</h3>
+        <ul>
+        {% for name, value in results.items() %}
+            <li>{{ name }}: {{ value }}</li>
+        {% endfor %}
+        </ul>
+    {% endif %}
+    <script>
+        // Prepopulate fields with average_spend when "Example" is clicked
+        document.getElementById('example-btn').onclick = function() {
+            const avg = {{ average_spend|tojson }};
+            {% for name in categories %}
+                document.getElementsByName('{{ name }}')[0].value = avg["{{ name }}"] || '';
+            {% endfor %}
+        };
+    </script>
+</body>
+</html>
