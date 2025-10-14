@@ -1,10 +1,12 @@
-import azure.functions as func
 import json
+import pandas as pd
+import azure.functions as func
 from forecast_models import ForecastModels
 
-models = ForecastModels(artifacts_dir='artifacts')
+models = ForecastModels(artifacts_dir="artifacts")
 
 app = func.FunctionApp(http_auth_level=func.AuthLevel.ANONYMOUS)
+
 
 @app.route(route="forecast", methods=["POST"])
 def forecast_function(req: func.HttpRequest) -> func.HttpResponse:
@@ -29,4 +31,19 @@ def forecast_function(req: func.HttpRequest) -> func.HttpResponse:
 
     return func.HttpResponse(
         json.dumps(forecast_result), mimetype="application/json", status_code=200
+    )
+
+
+@app.route(route="cpi_weights", methods=["GET"])
+def cpi_weights_function(req: func.HttpRequest) -> func.HttpResponse:
+    try:
+        dat = pd.read_csv("artifacts/cpi_weights_total_contribution.csv")
+        weights = dat.set_index("group")["cpi_weights"].to_dict()
+    except Exception as e:
+        return func.HttpResponse(
+            f"Error retrieving CPI weights: {str(e)}", status_code=500
+        )
+
+    return func.HttpResponse(
+        json.dumps(weights), mimetype="application/json", status_code=200
     )
