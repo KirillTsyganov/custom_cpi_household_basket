@@ -14,10 +14,9 @@ build/
 *.log
 *.csv
 *.json
-!top_level_categories.json
-!function.json
 *.xls
 *.pkl
+local.settings.json
 
 # data files, ok to commit
 !DCOILBRENTEU.csv
