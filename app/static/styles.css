@@ -92,7 +92,7 @@ li:last-child {
 }
 
 .filled-categories {
-    max-width: 400px;
+    max-width: 700px;
     margin: 2rem auto;
     padding: 1.5rem;
     background: #fff7ed;
@@ -145,4 +145,56 @@ filled-categories li:last-child {
     padding: 0.5rem 0;
     color: #444;
     font-size: 0.98rem;
+}
+
+/* Modern Table Styles */
+.categories-table, .inflation-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 1.5rem 0;
+    background: #fff;
+    border-radius: 12px;
+    overflow: hidden;
+    box-shadow: 0 2px 12px rgba(0,0,0,0.06);
+}
+
+.categories-table th, .categories-table td,
+.inflation-table th, .inflation-table td {
+    padding: 1rem;
+    text-align: center;
+    border-bottom: 1px solid #f1f1f1;
+}
+
+.categories-table th, .inflation-table th {
+    background: #f3f4f6;
+    font-weight: 600;
+    color: #ea580c;
+    font-size: 1.05rem;
+}
+
+.categories-table tr:last-child td,
+.inflation-table tr:last-child td {
+    border-bottom: none;
+}
+
+.categories-table tr:nth-child(even) td {
+    background: #fffbe6;
+}
+
+.categories-table td strong {
+    color: #2563eb;
+}
+
+@media (max-width: 800px) {
+    .filled-categories {
+        max-width: 98vw;
+        padding: 1rem;
+    }
+    .categories-table, .inflation-table {
+        font-size: 0.95rem;
+    }
+    .categories-table th, .categories-table td,
+    .inflation-table th, .inflation-table td {
+        padding: 0.6rem;
+    }
 }

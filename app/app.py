@@ -40,7 +40,8 @@ def forecast():
     total_spending = sum(form_results.values())
     payload = {"basket_idx": 0, "period": 1}
     try:
-        endpoint_url = "https://cpiforecasting-app.azurewebsites.net/api/forecast"
+        # endpoint_url = "https://cpiforecasting-app.azurewebsites.net/api/forecast"
+        endpoint_url = "http://localhost:7071/api/forecast"
         resp = requests.post(endpoint_url, json=payload)
         resp.raise_for_status()
         external_response = resp.json()  # list of dicts with basket_name and forecast
@@ -77,22 +78,31 @@ def forecast():
     except Exception as e:
         error_message = str(e)
 
-    # print(f"DEBUG: Filled categories: {filled_categories}")
-    # print(f"DEBUG: Filled categories: {filled_categories.values()}")
     personal_inflation_rate = sum(
         item["personal_inflation_forecast"] for item in filled_categories.values()
     )
     personal_inflation_actual = sum(
         item["personal_inflation_actual"] for item in filled_categories.values()
     )
-    print(f"DEBUG: Personal inflation rate: {personal_inflation_rate}")
-    print(f"DEBUG: Personal inflation actual: {personal_inflation_actual}")
+
+    total_values = {
+        "forecast_cpi": sum(item["forecast_cpi"] for item in filled_categories.values()),
+        "last_quarter_cpi": sum(
+            item["last_quarter_cpi"] for item in filled_categories.values()
+        ),
+        "quarterly_spend": sum(
+            item["quarterly_spend"] for item in filled_categories.values()
+        ),
+        "personal_inflation_forecast": personal_inflation_rate,
+        "personal_inflation_actual": personal_inflation_actual,
+    }
 
     return render_template(
         "forecast.html",
         personal_inflation_rate=personal_inflation_rate,
         personal_inflation_actual=personal_inflation_actual,
         filled_categories=filled_categories,
+        total_values=total_values,
         error_message=error_message,
     )
 
