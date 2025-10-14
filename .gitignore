@@ -25,3 +25,5 @@ local.settings.json
 !cpi_quarterly_quarter_on_quarter.csv
 !cpi_quarterly_year_on_year.csv
 !features.csv
+# Azure Functions config files, ok to commit
+!host.json
