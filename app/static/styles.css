@@ -228,3 +228,46 @@ a:hover {
         padding: 0.6rem;
     }
 }
+
+@media (max-width: 500px) {
+    body {
+        padding: 0.5rem;
+        font-size: 0.95rem;
+    }
+    form, .inflation-result, .filled-categories, ul {
+        max-width: 100vw;
+        padding: 0.5rem;
+        margin: 1rem auto;
+        border-radius: 8px;
+        box-shadow: 0 1px 6px rgba(0,0,0,0.05);
+    }
+    .categories-table, .inflation-table {
+        font-size: 0.85rem;
+        border-radius: 8px;
+        box-shadow: 0 1px 6px rgba(0,0,0,0.05);
+    }
+    .example-btn, input[type="submit"] {
+        font-size: 0.95rem;
+        padding: 0.5rem;
+    }
+    .filled-categories {
+        flex-direction: column;
+        align-items: stretch;
+        padding: 0.5rem;
+    }
+    .filled-categories ul {
+        gap: 0.7rem;
+        padding: 0;
+    }
+    .filled-categories li {
+        padding: 0.7rem 0.7rem 0.4rem 0.7rem;
+        font-size: 0.97rem;
+    }
+    .inflation-result .rate {
+        font-size: 1.5rem;
+    }
+    h2, h3 {
+        margin-top: 1rem;
+        font-size: 1.1rem;
+    }
+}
