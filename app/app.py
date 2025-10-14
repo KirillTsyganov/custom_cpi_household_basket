@@ -60,8 +60,8 @@ def forecast():
     total_spending = sum(form_results.values())
     payload = {"basket_idx": 0, "period": 1}
     try:
-        # endpoint_url = "https://cpiforecasting-app.azurewebsites.net/api/forecast"
-        endpoint_url = "http://localhost:7071/api/forecast"
+        endpoint_url = "https://cpiforecasting-app.azurewebsites.net/api/forecast"
+        # endpoint_url = "http://localhost:7071/api/forecast"
         resp = requests.post(endpoint_url, json=payload)
         resp.raise_for_status()
         external_response = resp.json()  # list of dicts with basket_name and forecast
@@ -72,7 +72,8 @@ def forecast():
         }
         print(f"DEBUG: Forecast map: {forecast_map}")
 
-        endpoint_weights = "http://localhost:7071/api/cpi_weights"
+        endpoint_weights = "https://cpiforecasting-app.azurewebsites.net/api/cpi_weights"
+        # endpoint_weights = "http://localhost:7071/api/cpi_weights"
         resp2 = requests.get(endpoint_weights)
         resp2.raise_for_status()
         cpi_weights = resp2.json()
